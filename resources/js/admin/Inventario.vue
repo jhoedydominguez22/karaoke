@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-5">
-    <h2 class="text-center mb-4">Solicitudes Enviadas a los DJ</h2>
+    <h2 class="text-center mb-4">Solicitudes Pendientes</h2>
 
     <!-- Tabla de solicitudes -->
     <table class="table table-striped table-bordered table-hover">
@@ -12,30 +12,24 @@
           <th>Artista</th>
           <th>Carátula</th>
           <th>Dedicatoria</th>
-          <th>Número de Mesa</th> <!-- Nueva columna para el número de mesa -->
-          <th>Estado</th>
+          <th>Número de Mesa</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(solicitud, index) in solicitudes" :key="solicitud._id.$oid">
+        <tr v-for="(solicitud, index) in solicitudesPendientes" :key="solicitud._id.$oid">
           <td>{{ index + 1 }}</td>
-          <td>{{ solicitud.nombreUsuario }}</td> <!-- Nombre del Usuario -->
-          <td>{{ solicitud.cancion }}</td> <!-- Nombre de la Canción -->
-          <td>{{ solicitud.artista }}</td> <!-- Nombre del Artista -->
+          <td>{{ solicitud.nombreUsuario }}</td>
+          <td>{{ solicitud.cancion }}</td>
+          <td>{{ solicitud.artista }}</td>
           <td>
-            <!-- Mostrar la carátula si existe -->
             <img v-if="solicitud.albumCover" :src="solicitud.albumCover" alt="Carátula" class="img-thumbnail" style="max-width: 80px; max-height: 80px; object-fit: cover;">
             <span v-else>No disponible</span>
           </td>
-          <td>{{ solicitud.dedicatoria || 'N/A' }}</td> <!-- Dedicatoria -->
-          <td>{{ solicitud.mesa || 'No especificada' }}</td> <!-- Mostrar el número de mesa -->
+          <td>{{ solicitud.dedicatoria || 'N/A' }}</td>
+          <td>{{ solicitud.mesa || 'No especificada' }}</td>
           <td>
-            <span v-if="solicitud.atendida" class="badge bg-success">Atendida</span>
-            <span v-else class="badge bg-warning">Pendiente</span>
-          </td>
-          <td>
-            <button v-if="!solicitud.atendida" class="btn btn-success btn-sm" @click="marcarComoAtendida(solicitud._id.$oid)">
+            <button class="btn btn-success btn-sm" @click="marcarComoAtendida(solicitud._id.$oid)">
               Marcar como Atendida
             </button>
           </td>
@@ -45,19 +39,23 @@
   </div>
 </template>
 
-
 <script>
 export default {
   data() {
     return {
-      solicitudes: [], // Aquí guardaremos las solicitudes obtenidas del backend
+      solicitudes: [], // Todas las solicitudes del backend
     };
   },
   created() {
     this.fetchSolicitudes();
   },
+  computed: {
+    // Filtrar solicitudes para mostrar solo las que no han sido atendidas
+    solicitudesPendientes() {
+      return this.solicitudes.filter(solicitud => !solicitud.atendida);
+    }
+  },
   methods: {
-    // Método para obtener las solicitudes de los DJ desde el backend
     fetchSolicitudes() {
       axios.get('/documentos')
         .then(response => {
@@ -67,37 +65,16 @@ export default {
           console.error('Hubo un error al obtener las solicitudes:', error);
         });
     },
-
-    // Método para formatear la fecha
-    formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('es-MX', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-      });
-    },
-
-    // Método para marcar una solicitud como atendida
     marcarComoAtendida(id) {
-      // Verifica que el id esté en formato correcto antes de enviarlo
-      const validId = id || id.$oid;
-
-      if (!validId) {
+      if (!id) {
         console.error('ID no válido:', id);
         return;
       }
 
-      axios.put(`/solicitudes/${validId}/atendida`)
-        .then(response => {
+      axios.put(`/solicitudes/${id}/atendida`)
+        .then(() => {
           // Actualizar el estado de la solicitud en el frontend
-          const solicitud = this.solicitudes.find(s => s._id.$oid === validId);
-          if (solicitud) {
-            solicitud.atendida = true;
-          }
+          this.solicitudes = this.solicitudes.filter(s => s._id.$oid !== id);
         })
         .catch(error => {
           console.error('Error al marcar como atendida:', error);
@@ -106,6 +83,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 /* Estilos para la tabla */

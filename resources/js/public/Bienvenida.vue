@@ -47,8 +47,9 @@ methods: {
     localStorage.setItem("esInvitado", "false");
     localStorage.setItem("mesa", mesa);
 
+    console.log('numero de mesa' , mesa);
     // Redirige a la página de inicio de sesión
-    window.location.href = "/login";
+    window.location.href = `/login?mesa=${mesa}`;
   },
 
   registrarse() {

@@ -44,6 +44,15 @@ class UsersController extends Controller
 
     public function login(Request $request)
 {
+
+    // Verifica que la mesa está llegando
+    $mesa = $request->input('mesa'); // Captura mesa desde el formulario
+    if (!$mesa) {
+        $mesa = $request->query('mesa'); // Intenta capturar mesa desde la URL
+    }
+
+    Log::info('Mesa recibida en login: ' . ($mesa ?? 'No se recibió')); 
+
     $request->validate([
         'email' => 'required|string|email',
         'password' => 'required|string',
@@ -51,15 +60,19 @@ class UsersController extends Controller
 
     $credentials = $request->only('email', 'password');
 
+
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate();
 
         // Obtener el usuario autenticado
         $user = Auth::user();
+        
+        // Obtener el número de mesa desde la solicitud
+        $mesa = $request->input('mesa');
 
         // Verificamos si el usuario tiene alguno de los roles definidos
         if (in_array('user', $user->roles)) {
-            return redirect('/formulario');  // Redirige directamente a la URL /formulario
+            return redirect('/formulario?mesa=' . ($request->input('mesa') ?? $request->query('mesa') ?? ''));
         } elseif (in_array('administrador', $user->roles) || in_array('superadmin', $user->roles) || in_array('dj', $user->roles)) {
             return redirect('/dashboard');  // Redirige al dashboard
         }
@@ -69,6 +82,7 @@ class UsersController extends Controller
         'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
     ])->onlyInput('email');
 }
+
 
 
     

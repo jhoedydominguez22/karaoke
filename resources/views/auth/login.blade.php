@@ -18,6 +18,9 @@
         <!-- Formulario de inicio de sesión -->
         <form id="loginForm" action="{{ route('users.login') }}" method="POST" class="px-6 py-8 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg w-full sm:max-w-md">
             @csrf
+
+            <input type="hidden" name="mesa" id="mesa" value="{{ request()->query('mesa') }}">
+
             <!-- Correo electrónico -->
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo Electrónico</label>
