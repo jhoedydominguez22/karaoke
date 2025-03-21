@@ -5,7 +5,8 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\EstadisticasController;
 use App\Http\Controllers\QRCodeController;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,6 +17,14 @@ use App\Http\Controllers\QRCodeController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('http://localhost:8000/bienvenida'); // Redirige después de cerrar sesión
+})->name('users.logout');
 
    //VISTAS PUBLICAS
    Route::get('/home', function () {
@@ -98,7 +107,6 @@ Route::post('/desechadosbusqueda', [DocumentoController::class, 'buscarDesechado
 //RUTAS PARA USUARIOS ADMINISTRATIVOS
 Route::post('/users', [UsersController::class, 'store'])->name('users.store');
 Route::post('/login', [UsersController::class, 'login'])->name('users.login');
-Route::post('/logout', [UsersController::class, 'logout'])->name('users.logout');
 
 Route::get('/list-users', [UsersController::class, 'listUsers'])->name('users.list');
 Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
@@ -120,3 +128,4 @@ Route::post('/solicitud', [DocumentoController::class, 'storeSolicitud']);
 Route::put('/solicitudes/{id}/atendida', [DocumentoController::class, 'marcarComoAtendida']);
 Route::post('/guardar-qr', [QRCodeController::class, 'guardarQR']);
 Route::get('/listado-qr', [QRCodeController::class, 'listarQRCodes']);
+Route::delete('/eliminar-qr/{id}', [QRCodeController::class, 'eliminarQR']);

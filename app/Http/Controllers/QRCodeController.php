@@ -53,5 +53,10 @@ class QRCodeController extends Controller
     }
 }
 
-    
+    // Eliminar un QR por ID
+    public function eliminarQR($id)
+    {
+        DB::connection('mongodb')->collection('qrcodes')->where('_id', $id)->delete();
+        return response()->json(['message' => 'Código QR eliminado correctamente']);
+    }
 }

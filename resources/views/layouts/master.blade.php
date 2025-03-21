@@ -240,7 +240,7 @@
         <div class="message">
             <h1>El acceso a esta pagina esta restingido</h1>
             <p>Por favor comunicate con el administrador si consideras que hay un error</p>
-            <a href="http://192.168.1.125:8000/login" type="button" class="btn btn-danger">Salir</a>
+            <a href="http://localhost:8000/login" type="button" class="btn btn-danger">Salir</a>
         </div>
 
         <style>
@@ -373,25 +373,31 @@
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">¿Estás listo para irte?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <form id="logout-form" action="{{ route('users.logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
-                    <button class="btn btn-primary" type="button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar sesión</button>
-                </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">¿Estás listo para irte?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <form id="logout-form" action="{{ route('users.logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+                <button class="btn btn-primary" type="button"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit(); setTimeout(() => { window.location.href = 'http://localhost:8000/bienvenida'; }, 1000);">
+                    Cerrar sesión
+                </button>
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Bootstrap core JavaScript-->
     <script src="assets/vendor/jquery/jquery.min.js"></script>
